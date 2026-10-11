@@ -1,0 +1,24 @@
+{
+  "name": "echocast",
+  "version": "1.0.0",
+  "description": "EchoCast - 长文一键转中文双人争论播客 (Cloudflare Pages + DeepSeek + MiniMax)",
+  "type": "module",
+  "main": "_worker.js",
+  "scripts": {
+    "start": "node dev-server.mjs",
+    "dev": "node dev-server.mjs",
+    "check": "node --check _worker.js && node --check app.js && node --check dev-server.mjs",
+    "test": "./test-curl.sh"
+  },
+  "keywords": [
+    "podcast",
+    "cloudflare-pages",
+    "cloudflare-workers",
+    "deepseek",
+    "minimax",
+    "tts",
+    "debate"
+  ],
+  "author": "EchoCast Team",
+  "license": "MIT"
+}

@@ -1,0 +1,30 @@
+# ==============================================================================
+# EchoCast Wrangler 配置文件 (本地开发参考配置)
+# 生产环境推荐直接在 Cloudflare Dashboard 通过 Pages Git 仓库集成部署：
+# - 框架预设: None (直接部署静态资产与根目录 _worker.js)
+# - 构建输出目录: / (根目录)
+# ==============================================================================
+
+name = "echocast"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "."
+
+# Cloudflare D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "echocast-db"
+database_id = "your-d1-database-uuid" # 替换为您通过 wrangler d1 create echocast-db 创建的 ID
+
+# Cloudflare R2 对象存储桶绑定
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "echocast-audio"
+
+# 环境变量 (开发参考，请勿在此提交真实生产密钥)
+[vars]
+MOCK_EXTERNAL_APIS = "false"
+# DEEPSEEK_KEY = "sk-..."              # 生产环境请在 Pages 控制台 Environment Variables 设置
+# MINIMAX_KEY = "..."                  # 生产环境请在 Pages 控制台 Environment Variables 设置
+# MINIMAX_VOICE_A = "male-qn-qingse"   # 主播 A 深入浅出捧哏音色
+# MINIMAX_VOICE_B = "male-qn-jingying" # 主播 B 毒舌挑刺音色
+# R2_PUBLIC_DOMAIN = ""                # 可选 R2 公开 CDN 域名 (如 cdn.echocast.fm)

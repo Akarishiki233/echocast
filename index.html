@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoCast - 长文一键转中文双人争论播客 (90s免费片花)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-icon">🎙️</div>
+        <div>
+          <h1 class="logo-text">EchoCast</h1>
+          <p class="logo-tagline">长文一键转中文双人争论播客</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-accent">90 秒免费试听片花</span>
+        <span class="badge badge-outline">双人拟真人声对谈</span>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Input Section -->
+      <section class="card input-card">
+        <div class="card-header">
+          <h2 class="card-title">输入素材文章</h2>
+          <p class="card-desc">输入任意深度长文 URL 或直接粘贴内容，AI 双主播立即展开针锋相对的 90 秒观点辩论。</p>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="tabs">
+          <button type="button" class="tab-btn active" id="tab-url-btn" onclick="switchTab('url')">
+            🔗 粘贴文章链接 (URL)
+          </button>
+          <button type="button" class="tab-btn" id="tab-text-btn" onclick="switchTab('text')">
+            📝 直接粘贴长文本
+          </button>
+        </div>
+
+        <!-- URL Input Panel -->
+        <div class="tab-panel active" id="panel-url">
+          <div class="input-group">
+            <label for="input-url">文章网页链接</label>
+            <input 
+              type="url" 
+              id="input-url" 
+              placeholder="https://... 例如公众号、知乎专栏、科技博文或任意深度长文链接" 
+              autocomplete="off"
+            />
+          </div>
+          <div class="quick-examples">
+            <span class="examples-label">快速体验：</span>
+            <button type="button" class="example-chip" onclick="fillExample('indie-dev')">
+              💡 独立开发的真正敌人不是技术
+            </button>
+            <button type="button" class="example-chip" onclick="fillExample('ai-bubble')">
+              ⚡ 大模型落地潮中的自嗨与真相
+            </button>
+          </div>
+        </div>
+
+        <!-- Text Input Panel -->
+        <div class="tab-panel" id="panel-text">
+          <div class="input-group">
+            <label for="input-text">长文章正文或核心观点段落</label>
+            <textarea 
+              id="input-text" 
+              rows="6" 
+              placeholder="粘贴文章核心正文（建议 800 - 3000 字），AI 将精准提炼最具争议交锋的观点进行对抗辩论..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Transformative Doctrine Notice -->
+        <div class="legal-notice">
+          <span class="notice-icon">⚖️</span>
+          <span><b>版权与转化性评论声明：</b>EchoCast 仅提取文章论点作为批判性讨论靶子，<b>绝不原文朗读或复读</b>。结尾将严格朗读原作者与出处署名。</span>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="action-row">
+          <button type="button" class="btn btn-primary" id="btn-generate" onclick="handleGenerate()">
+            <span class="btn-text">一键生成 90 秒辩论片花</span>
+            <span class="btn-spinner" style="display: none;"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Processing Status Card (hidden initially) -->
+      <section class="card status-card" id="status-card" style="display: none;">
+        <div class="status-header">
+          <div class="status-indicator-pulsing"></div>
+          <div>
+            <h3 class="status-title" id="status-title">正在生成辩论片花...</h3>
+            <p class="status-sub" id="status-sub">大约需要 15-30 秒，请稍候</p>
+          </div>
+        </div>
+
+        <div class="progress-steps">
+          <div class="step-item" id="step-extract">
+            <div class="step-dot">1</div>
+            <div class="step-label">Jina 提取核心论点</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="step-script">
+            <div class="step-dot">2</div>
+            <div class="step-label">DeepSeek 编排争辩剧本</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="step-tts">
+            <div class="step-dot">3</div>
+            <div class="step-label">MiniMax 双人拟真语音合成</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Result Section (hidden initially) -->
+      <section class="card result-card" id="result-card" style="display: none;">
+        <!-- Attribution Badge -->
+        <div class="attribution-banner">
+          <div class="attribution-main">
+            <span class="badge badge-gold">辩论主题</span>
+            <h3 class="podcast-title" id="result-title">文章标题</h3>
+          </div>
+          <div class="attribution-meta">
+            <span id="result-author">原作者：未知</span>
+            <span class="meta-dot">·</span>
+            <a href="#" target="_blank" rel="noopener noreferrer" id="result-source-link" class="source-link">查看原文出处 ↗</a>
+          </div>
+        </div>
+
+        <!-- Hosts Profile Banner -->
+        <div class="hosts-strip">
+          <div class="host-badge host-a">
+            <div class="host-avatar">🎙️</div>
+            <div>
+              <div class="host-name">阿伦（主播 A）</div>
+              <div class="host-role">深入浅出捧哏 · 观点梳理与辩护</div>
+            </div>
+          </div>
+          <div class="host-vs">VS</div>
+          <div class="host-badge host-b">
+            <div class="host-avatar">⚡</div>
+            <div>
+              <div class="host-name">大白（主播 B）</div>
+              <div class="host-role">毒舌挑刺 · 现实破绽与商业反思</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Player -->
+        <div class="player-wrapper">
+          <audio id="audio-player" preload="metadata" controls class="native-audio-player"></audio>
+          <div class="player-subbar">
+            <span class="audio-tag">⏱️ 90 秒精华试听片花（已合成分片）</span>
+            <a href="#" id="download-audio-link" download="echocast-debate.mp3" class="btn-download">
+              ⬇️ 下载音频 MP3
+            </a>
+          </div>
+        </div>
+
+        <!-- Dialogue Transcript View -->
+        <div class="transcript-section">
+          <h4 class="transcript-title">辩论逐字对谈（含拟真情绪标签）</h4>
+          <div class="transcript-list" id="transcript-list">
+            <!-- Dynamic dialogue cards injected by JS -->
+          </div>
+          <div class="attribution-outro" id="attribution-outro">
+            <!-- Mandatory attribution statement -->
+          </div>
+        </div>
+
+        <!-- Paywall Stub Card -->
+        <div class="paywall-card">
+          <div class="paywall-header">
+            <div class="paywall-lock">🔒</div>
+            <div>
+              <h3 class="paywall-title">90 秒片花不过瘾？解锁 8-12 分钟完整深度辩论版</h3>
+              <p class="paywall-subtitle">深入剖析 5 大矛盾焦点 · 现实落地案例反思 · 终局推演与高清原声下载</p>
+            </div>
+          </div>
+          <div class="paywall-features">
+            <div class="feature-item">✓ 完整长音频（8-12分钟激烈交锋）</div>
+            <div class="feature-item">✓ 深度实战避坑指南</div>
+            <div class="feature-item">✓ 包含完整逐字稿与观点导图</div>
+            <div class="feature-item">✓ 支持导出 Apple Podcasts / 小宇宙</div>
+          </div>
+          <div class="paywall-actions">
+            <button type="button" class="btn btn-paywall" onclick="openPaywallModal()">
+              ⚡ 解锁完整版（内测限时特惠 ¥9.9）
+            </button>
+            <span class="paywall-hint">已有 1,420+ 位创作者与工程师订阅完整节目</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Paywall Modal Stub -->
+      <div class="modal-backdrop" id="paywall-modal" style="display: none;">
+        <div class="modal-card">
+          <button type="button" class="modal-close" onclick="closePaywallModal()">✕</button>
+          <div class="modal-icon">🎧</div>
+          <h3 class="modal-title">预约解锁 10 分钟完整深度版</h3>
+          <p class="modal-desc">
+            MVP 内测期间无需付费！填写邮箱即可获得本期长音频播客优先生成特权。
+          </p>
+          <form id="paywall-form" onsubmit="handlePaywallSubmit(event)">
+            <div class="input-group">
+              <label for="paywall-email">您的邮箱地址</label>
+              <input type="email" id="paywall-email" required placeholder="name@example.com" />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="btn-paywall-submit">
+              确认预约解锁 (免费内测席位)
+            </button>
+          </form>
+          <div id="paywall-result-msg" class="paywall-success-msg" style="display: none;"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p class="footer-copyright">
+        EchoCast © 2026 · AI 观点碰撞播客生成引擎 · Transformative Commentary 原创评论作品
+      </p>
+      <p class="footer-legal">
+        严格遵守版权规范：仅提取文章观点作分析辩论素材，绝不全文朗读复读，每期均保留作者出处署名。
+      </p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
